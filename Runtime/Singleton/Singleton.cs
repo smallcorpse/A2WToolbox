@@ -42,7 +42,10 @@ namespace A2W
 
         private static bool applicationIsQuitting = false;
 
-        public void OnDestroy()
+        // 修复：原来用 OnDestroy 置位，导致每次退出 Play 模式（组件销毁）后
+        // 所有单例 getter 永久返回 null（直到域重载），第二次 Play 必炸。
+        // 只有真正退出应用才需要放弃单例，改在 OnApplicationQuit 置位。
+        public void OnApplicationQuit()
         {
             applicationIsQuitting = true;
         }
