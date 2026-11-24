@@ -42,12 +42,17 @@ namespace A2W
 
         private static bool applicationIsQuitting = false;
 
-        // 修复：原来用 OnDestroy 置位，导致每次退出 Play 模式（组件销毁）后
-        // 所有单例 getter 永久返回 null（直到域重载），第二次 Play 必炸。
-        // 只有真正退出应用才需要放弃单例，改在 OnApplicationQuit 置位。
+        // 修复：原来用 OnDestroy 置位，导致每次退出 Play 模式后所有单例 getter
+        // 永久返回 null（直到域重载），第二次 Play 必炸。
+        // 注意：编辑器内退出 Play 也会回调 OnApplicationQuit，因此编辑器环境直接不置位；
+        // 真机/打包运行仍在应用退出时置位（防止 quit 后 getter 再创建新对象）。
         public void OnApplicationQuit()
         {
+#if UNITY_EDITOR
+            return;
+#else
             applicationIsQuitting = true;
+#endif
         }
     }
 }
